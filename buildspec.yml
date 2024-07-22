@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x
+    commands:
+      # Install dependencies into a directory for Lambda deployment
+      - mkdir -p python
+      - pip install -r requirements.txt -t python/
+  build:
+    commands:
+      # Zip the contents for Lambda deployment
+      - cd python
+      - zip -r ../function.zip .
+      - cd ..
+artifacts:
+  files:
+    - function.zip
