@@ -1,19 +1,22 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
-      python: 3.x
+      python: 3.11
     commands:
-      # Install dependencies into a directory for Lambda deployment
-      - mkdir -p python
-      - pip install -r requirements.txt -t python/
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt -t lib
   build:
     commands:
-      # Zip the contents for Lambda deployment
-      - cd python
-      - zip -r ../function.zip .
+      - echo "Zipping deployment package..."
+      - cd lib
+      - zip -r9 ../deployment_package.zip .
       - cd ..
-artifacts:
-  files:
-    - function.zip
+      - zip -g deployment_package.zip lambda_function.py
+  post_build:
+    commands:
+      - echo "Uploading to S3..."
+      - aws s3 cp deployment_package.zip s3://the-cicdbucket/
+      - echo "Updating Lambda function via S3..."
+      - aws lambda update-function-code --function-name processingdoordashdeliverydata --s3-bucket the-cicdbucket --s3-key deployment_package.zip
+      - echo "Deployment complete!"
