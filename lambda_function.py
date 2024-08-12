@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         # Write the filtered DataFrame to a new JSON file
         output_key = object_key.replace('raw_input', 'processed')
         filtered_data = filtered_df.to_json(orient='records')
-        s3_client.put_object(Bucket='doordash-deliverydata', Key=output_key, Body=filtered_data)
+        s3_client.put_object(Bucket='doordash-processed-data', Key=output_key, Body=filtered_data)
 
         # Publish a success message to SNS
         sns_client.publish(
